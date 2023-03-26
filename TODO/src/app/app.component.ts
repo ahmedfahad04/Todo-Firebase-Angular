@@ -14,6 +14,8 @@ import { TodoService } from './todo.service';
 export class AppComponent implements OnInit {
 
   todoList: Todo[] = [];
+  currentID: string = '';
+  title: string = '';
 
   constructor(private todoService: TodoService, private http: HttpClient) {
   }
@@ -31,38 +33,59 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.todoList.push({ title: form.value.title, isCompleted: false });
+    this.title = form.value.title;
 
     // Save to firebase rtdb
-    this.todoService.AddItem(form.value.title);
+    this.todoService.AddItem(form.value.title)
+    .subscribe(response => {
+      const newItem = {id: response.name, title: this.title, isCompleted: false};
+      this.todoList.push(newItem);
+    });;
+
+    console.log("A: ", this.todoList);
 
     form.resetForm();
   }
 
   onFetchData() {
 
-    console.log("LIST: ", this.todoList);
-
     // Fetch from firebase rtdb
-    this.todoService.FetchItem()
+    this.http.get<{ [key: string]: Todo }>('https://my-todos-20c34-default-rtdb.firebaseio.com/todos.json')
+      .pipe(map((res) => {
+        const todoArray = [];
+        for (const key in res) {
+          if (res.hasOwnProperty(key)) {
+            todoArray.push({ ...res[key], id: key });
+          }
+        }
+        console.log("Updated: ", todoArray);
+        return todoArray;
+      }))
       .subscribe(response => {
         this.todoList = response;
-        console.log('GET: ' + this.todoList);
+        console.log('GET: ' + this.todoList.length);
       });
+
+    console.log("LIST: ", this.todoList.length);
 
   }
 
   onToggleDone(id: any): void {
 
-    let todo = this.todoList.filter(x => x.id == id)[0];
+    console.log("CUrrent ID: ", id);
+
+    let todo = this.todoList.find((x) => { return x.id == id });
     todo.isCompleted = !todo.isCompleted;
+    console.log("TODO: ", todo);
 
     // update the entry in firebase rtdb as todo.isCompleted
     // NOTE: Careful About the data types
     this.http.put('https://my-todos-20c34-default-rtdb.firebaseio.com/todos/' + id + '.json', { title: todo.title, isCompleted: todo.isCompleted })
-    .subscribe(response => {
-      console.log(response);
-    });
+      .subscribe(response => {
+        console.log(response);
+        this.onFetchData();
+      });
+
   }
 
   onRemoveItem(id: any): void {

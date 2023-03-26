@@ -13,14 +13,12 @@ export class TodoService {
 
   constructor(private http: HttpClient) { }
 
-  AddItem(title: string): void {
-    this.http.post('https://my-todos-20c34-default-rtdb.firebaseio.com/todos.json', {title: title, isCompleted: false})
-    .subscribe(response => {
-      console.log(response);
-    });
+  AddItem(title: string) {
+    return this.http.post<{name: string}>('https://my-todos-20c34-default-rtdb.firebaseio.com/todos.json', {title: title, isCompleted: false})
   }
 
   FetchItem() {
+    
     return this.http.get<{[key: string]: Todo}>('https://my-todos-20c34-default-rtdb.firebaseio.com/todos.json')
       .pipe(map((res) => {
         const todoArray = [];
@@ -28,8 +26,7 @@ export class TodoService {
           if (res.hasOwnProperty(key)) {
             todoArray.push({...res[key], id: key});
           }
-        }
-        
+        }        
         return todoArray;
       }))
   }
