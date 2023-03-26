@@ -13,7 +13,7 @@
   <ul class="todo-list">
     <li *ngFor="let todo of todoList">
       <div *ngIf="!this.todo.isCompleted">
-        <div>{{this.todo.title}} {{this.todo.id}}</div>
+        <div>{{this.todo.title}}</div>
         <div>
           <button class="btn-floating waves-effect waves-light blue" (click)="onToggleDone(this.todo.id)"><i
               class="material-icons">check</i></button>
