@@ -59,7 +59,7 @@ export class AppComponent implements OnInit {
 
     // update the entry in firebase rtdb as todo.isCompleted
     // NOTE: Careful About the data types
-    this.todoService.CheckedItem(todo, id)
+    this.http.put('https://my-todos-20c34-default-rtdb.firebaseio.com/todos/' + id + '.json', { title: todo.title, isCompleted: todo.isCompleted })
     .subscribe(response => {
       console.log(response);
     });

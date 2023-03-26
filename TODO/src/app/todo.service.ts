@@ -45,8 +45,4 @@ export class TodoService {
     return this.http.delete('https://my-todos-20c34-default-rtdb.firebaseio.com/todos/' + id + '.json')
     
   }
-
-  CheckedItem(todo, id) {
-    return this.http.put('https://my-todos-20c34-default-rtdb.firebaseio.com/todos/' + id + '.json', { title: todo.title, isCompleted: todo.isCompleted })
-  }
 }
