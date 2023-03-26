@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "material-css": "^0.7.0",
+    "material-icon": "^0.1.4"
+  }
+}
